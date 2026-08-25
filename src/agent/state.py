@@ -17,3 +17,5 @@ class AgentState(TypedDict):
     execution_status: ExecutionStatus
     error_traceback: str
     retry_count: int
+    # SHA-256 fingerprints of assertions captured after the first successful generation.
+    original_assertions: list[str]

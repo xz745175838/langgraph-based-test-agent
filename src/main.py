@@ -33,6 +33,7 @@ async def generate_test(
         "execution_status": "PENDING",
         "error_traceback": "",
         "retry_count": 0,
+        "original_assertions": [],
     }
 
     background_tasks.add_task(_run_graph, initial_state)

@@ -70,6 +70,7 @@ def test_execute_sandbox_node_success(tmp_path, monkeypatch):
         "execution_status": "PENDING",
         "error_traceback": "",
         "retry_count": 0,
+        "original_assertions": [],
     }
     mock_result = MagicMock(returncode=0, stdout="1 passed", stderr="")
     with patch("src.agent.nodes.sandbox_executor.subprocess.run", return_value=mock_result):
@@ -90,6 +91,7 @@ def test_execute_sandbox_node_script_error(tmp_path, monkeypatch):
         "execution_status": "PENDING",
         "error_traceback": "",
         "retry_count": 0,
+        "original_assertions": [],
     }
     mock_result = MagicMock(
         returncode=1,
@@ -112,6 +114,7 @@ def test_execute_sandbox_node_sdk_bug(tmp_path, monkeypatch):
         "execution_status": "PENDING",
         "error_traceback": "",
         "retry_count": 0,
+        "original_assertions": [],
     }
     mock_result = MagicMock(returncode=1, stdout=VIM_FAULT_OUTPUT, stderr="")
     with patch("src.agent.nodes.sandbox_executor.subprocess.run", return_value=mock_result):
@@ -131,6 +134,7 @@ def test_execute_sandbox_node_not_supported_is_sdk_bug(tmp_path, monkeypatch):
         "execution_status": "PENDING",
         "error_traceback": "",
         "retry_count": 0,
+        "original_assertions": [],
     }
     with patch("src.agent.nodes.sandbox_executor.subprocess.run", return_value=mock_result):
         update = execute_sandbox_node(state)

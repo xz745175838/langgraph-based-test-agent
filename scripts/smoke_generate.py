@@ -26,6 +26,7 @@ def main() -> int:
         "execution_status": "PENDING",
         "error_traceback": "",
         "retry_count": 0,
+        "original_assertions": [],
     }
 
     print("AgentState keys:", sorted(state.keys()))

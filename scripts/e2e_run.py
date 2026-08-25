@@ -37,6 +37,7 @@ def _build_initial_state(prompt: str, target_api: str) -> AgentState:
         "execution_status": "PENDING",
         "error_traceback": "",
         "retry_count": 0,
+        "original_assertions": [],
     }
 
 

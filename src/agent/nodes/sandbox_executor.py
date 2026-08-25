@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Any
 
 from src.agent.state import AgentState
+from src.agent.utils.ast_checker import verify_assertions_unchanged
 
 DEFAULT_ARTIFACTS_DIR = Path("/tmp/sandbox")
 PYTEST_TIMEOUT_SEC = 300
@@ -151,6 +152,12 @@ def _save_artifacts(
 
 def execute_sandbox_node(state: AgentState) -> dict[str, Any]:
     """Write generated code to sandbox, run pytest, and persist full output."""
+    # Hard gate: refuse to run if assertions were tampered after baseline capture.
+    verify_assertions_unchanged(
+        state.get("original_assertions") or [],
+        state.get("generated_code") or "",
+    )
+
     generated_code = state["generated_code"]
     out_dir = artifacts_dir()
     out_dir.mkdir(parents=True, exist_ok=True)

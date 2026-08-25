@@ -7,6 +7,7 @@ from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_openai import ChatOpenAI
 
 from src.agent.state import AgentState
+from src.agent.utils.ast_checker import verify_assertions_unchanged
 
 SYSTEM_PROMPT = """你是一位精通 VMware pyVmomi 的高级测试工程师。请根据用户需求生成可直接运行的 Python unittest 脚本。
 
@@ -223,7 +224,12 @@ def _generation_failure(error_message: str, generated_code: str = "") -> dict[st
 
 
 def generate_code_node(state: AgentState) -> dict[str, Any]:
-    """Call DeepSeek to generate a pyVmomi unittest script and update state."""
+    """Call DeepSeek to generate a pyVmomi unittest script and update state.
+
+    After a successful extract+validate:
+    - First generation: leave original_assertions empty (record_assertions node fills it).
+    - Self-heal / regenerate: verify new code still matches the frozen assertion hashes.
+    """
     llm = _get_llm()
     user_prompt = (
         f"Target API: {state['target_api']}\n"
@@ -245,5 +251,10 @@ def generate_code_node(state: AgentState) -> dict[str, Any]:
     validation_errors = validate_generated_code(extracted_code)
     if validation_errors:
         return _generation_failure("\n".join(validation_errors), generated_code=extracted_code)
+
+    # Self-heal path: baseline already frozen — refuse weakened/deleted asserts.
+    original = state.get("original_assertions") or []
+    if original:
+        verify_assertions_unchanged(original, extracted_code)
 
     return {"generated_code": extracted_code}
